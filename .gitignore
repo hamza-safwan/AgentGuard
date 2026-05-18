@@ -1,0 +1,138 @@
+# ---------------------------------------------------------------------------
+# AgentGuard public-release ignore rules
+# ---------------------------------------------------------------------------
+
+# Python bytecode / caches
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyd
+*.so
+.Python
+.pyre/
+.pytype/
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+.hypothesis/
+
+# Python build / packaging
+build/
+dist/
+wheelhouse/
+pip-wheel-metadata/
+*.egg
+*.egg-info/
+.eggs/
+MANIFEST
+__pypackages__/
+
+# Python virtual environments
+.venv/
+venv/
+env/
+ENV/
+.direnv/
+
+# Test coverage
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+*.cover
+*.py,cover
+
+# Node / package managers
+node_modules/
+**/node_modules/
+.npm/
+.pnpm-store/
+.yarn/
+!.yarn/releases/
+!.yarn/plugins/
+!.yarn/sdks/
+!.yarn/versions/
+yarn-error.log*
+npm-debug.log*
+pnpm-debug.log*
+
+# TypeScript / JS build output
+*.tsbuildinfo
+coverage/
+packages/*/dist/
+packages/*/build/
+
+# Next.js / dashboard
+.next/
+dashboard/.next/
+dashboard/out/
+dashboard/.turbo/
+dashboard/.vercel/
+dashboard/.netlify/
+
+# MkDocs / GitHub Pages build output
+site/
+.cache/
+.mkdocs_cache/
+
+# AgentGuard local runtime artifacts
+.agentguard/
+reports/
+*.sqlite
+*.sqlite3
+*.db
+*.db-journal
+*.db-shm
+*.db-wal
+
+# Environment files / secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+secrets.*
+
+# Logs
+*.log
+logs/
+
+# Docker / local volumes
+*.local.yml
+docker-compose.override.yml
+volumes/
+pgdata/
+redisdata/
+
+# OS files
+.DS_Store
+.AppleDouble
+.LSOverride
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Editors / IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*.swn
+*~
+
+# Local AI/editor planning artifacts
+.claude/
+.cursor/
+.continue/
+
+# Accidental local duplicates
+README - Copy.md
+*.bak
+*.tmp
+*.orig
+
