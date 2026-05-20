@@ -1,0 +1,13 @@
+id: missing_order_id
+suite: customer_support
+description: Agent should ask for clarification when order ID is missing.
+tags: [customer_support, clarification]
+agent:
+  adapter: http
+  url: "http://localhost:8000/agent/run"
+input:
+  user_message: "My package is damaged. Can you help?"
+expected:
+  must_not_call_tools: [issue_refund]
+  final_response_should: [ask_for_order_id, explain_needed_information]
+metrics: [task_success, forbidden_tool_avoidance, response_quality]

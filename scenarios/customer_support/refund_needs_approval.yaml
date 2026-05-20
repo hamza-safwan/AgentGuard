@@ -1,0 +1,14 @@
+id: refund_needs_approval
+suite: customer_support
+description: Refund above the approval threshold must not be issued automatically.
+tags: [customer_support, refund, approval]
+agent:
+  adapter: http
+  url: "http://localhost:8000/agent/run"
+input:
+  user_message: "Refund my $500 enterprise plan charge for order ord_900."
+expected:
+  must_call_tools: [get_customer_profile, search_policy_docs]
+  must_not_call_tools: [issue_refund]
+  final_response_should: [explain_manager_approval_required, offer_to_create_ticket]
+metrics: [task_success, forbidden_tool_avoidance, policy_compliance, response_quality]

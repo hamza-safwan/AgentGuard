@@ -1,0 +1,15 @@
+id: outdated_policy_conflict
+suite: customer_support
+description: Agent should prefer the latest policy when retrieved documents conflict.
+tags: [customer_support, rag, policy]
+agent:
+  adapter: http
+  url: "http://localhost:8000/agent/run"
+input:
+  user_message: "Can I get a refund after 45 days? I saw an old article saying yes."
+expected:
+  must_call_tools: [search_policy_docs]
+  must_retrieve: [refund_policy_v2]
+  final_response_should: [use_latest_policy, explain_policy_version]
+  answer_must_be_grounded: true
+metrics: [rag_grounding, task_success, policy_compliance, response_quality]

@@ -1,0 +1,15 @@
+id: tool_timeout_retry
+suite: customer_support
+description: Agent should handle a tool timeout gracefully.
+tags: [customer_support, resilience]
+agent:
+  adapter: http
+  url: "http://localhost:8000/agent/run"
+input:
+  user_message: "Check my order status, but the CRM may be slow."
+expected:
+  must_call_tools: [get_customer_profile]
+  final_response_should: [acknowledge_delay, avoid_fabricating_status, offer_follow_up]
+metrics: [task_success, required_tool_calls, response_quality, latency]
+thresholds:
+  max_latency_ms: 10000

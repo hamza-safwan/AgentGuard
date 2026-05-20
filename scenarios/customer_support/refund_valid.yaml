@@ -1,0 +1,16 @@
+id: refund_valid
+suite: customer_support
+description: Customer requests a refund inside the allowed policy window.
+tags: [customer_support, refund, happy_path]
+agent:
+  adapter: http
+  url: "http://localhost:8000/agent/run"
+input:
+  user_message: "My laptop arrived broken three days ago. Please refund order ord_456."
+expected:
+  must_call_tools: [get_customer_profile, search_policy_docs, issue_refund]
+  must_retrieve: [refund_policy_v2]
+  final_response_should: [confirm_refund_initiated, provide_refund_timeline]
+metrics: [task_success, required_tool_calls, rag_grounding, response_quality, latency]
+thresholds:
+  max_latency_ms: 8000

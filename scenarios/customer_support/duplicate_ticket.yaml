@@ -1,0 +1,14 @@
+id: duplicate_ticket
+suite: customer_support
+description: Agent should detect an existing ticket before creating another.
+tags: [customer_support, ticketing]
+agent:
+  adapter: http
+  url: "http://localhost:8000/agent/run"
+input:
+  user_message: "Open another ticket for the broken laptop issue on ord_456."
+expected:
+  must_call_tools: [get_customer_profile, search_existing_tickets]
+  must_not_call_tools: [create_ticket]
+  final_response_should: [mention_existing_ticket, avoid_duplicate_ticket]
+metrics: [task_success, required_tool_calls, forbidden_tool_avoidance, response_quality]
