@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>AgentGuard - Reliability Report - {{ summary.run_id }}</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --surface: #12121a;
+      --border: #1e1e2e;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --primary: #6366f1;
+      --success: #22c55e;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+    }
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0; padding: 0; background: var(--bg); color: var(--text);
+      font-family: -apple-system, "Segoe UI", Inter, system-ui, sans-serif;
+      line-height: 1.55;
+    }
+    .container { max-width: 1080px; margin: 0 auto; padding: 32px 24px 64px; }
+    h1, h2, h3 { color: var(--text); margin: 0 0 8px; }
+    h1 { font-size: 28px; }
+    h2 { font-size: 20px; margin-top: 32px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+    h3 { font-size: 16px; color: var(--muted); }
+    .deploy-banner {
+      padding: 16px 20px; border-radius: 12px; font-weight: 700; font-size: 18px;
+      margin: 16px 0 24px;
+    }
+    .deploy-banner.deploy_with_monitoring { background: rgba(34, 197, 94, .12); color: var(--success); }
+    .deploy-banner.deploy_carefully { background: rgba(245, 158, 11, .12); color: var(--warning); }
+    .deploy-banner.fix_before_production { background: rgba(245, 158, 11, .18); color: var(--warning); }
+    .deploy-banner.do_not_deploy { background: rgba(239, 68, 68, .14); color: var(--danger); }
+    .meta { color: var(--muted); font-size: 14px; margin: 4px 0; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; }
+    .card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; padding: 16px;
+    }
+    .card .label { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+    .card .value { font-size: 28px; font-weight: 700; margin-top: 4px; }
+    .score-good { color: var(--success); }
+    .score-warn { color: var(--warning); }
+    .score-bad { color: var(--danger); }
+    table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+    th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--border); font-size: 14px; }
+    th { color: var(--muted); font-weight: 600; text-transform: uppercase; font-size: 11px; letter-spacing: .04em; }
+    .status-pass { color: var(--success); font-weight: 600; }
+    .status-fail { color: var(--danger); font-weight: 600; }
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 600; }
+    .badge.critical { background: rgba(239, 68, 68, .18); color: var(--danger); }
+    .badge.high { background: rgba(245, 158, 11, .18); color: var(--warning); }
+    .badge.medium { background: rgba(245, 158, 11, .12); color: var(--warning); }
+    .badge.low { background: rgba(99, 102, 241, .18); color: var(--primary); }
+    .finding { padding: 8px 0; border-bottom: 1px dashed var(--border); }
+    .finding:last-child { border-bottom: none; }
+    .footer { color: var(--muted); font-size: 12px; margin-top: 48px; text-align: center; }
+    code { background: rgba(255,255,255,.04); padding: 1px 6px; border-radius: 4px; font-size: 12px; }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>Agent Reliability Report</h1>
+  <div class="meta"><strong>Agent:</strong> {{ summary.agent_name }} &middot; <strong>Version:</strong> {{ summary.agent_version }}</div>
+  <div class="meta"><strong>Suite:</strong> {{ summary.suite }} &middot; <strong>Run ID:</strong> <code>{{ summary.run_id }}</code></div>
+  <div class="meta"><strong>Started:</strong> {{ summary.started_at }} &middot; <strong>Finished:</strong> {{ summary.finished_at }}</div>
+
+  <div class="deploy-banner {{ summary.deployment_recommendation }}">
+    Deployment recommendation: {{ summary.deployment_recommendation | replace("_", " ") | upper }}
+  </div>
+
+  <div class="grid">
+    <div class="card"><div class="label">Overall</div><div class="value {{ score_class(summary.overall_score) }}">{{ summary.overall_score|round(0)|int }}/100</div></div>
+    <div class="card"><div class="label">Security</div><div class="value {{ score_class(summary.security_score) }}">{{ summary.security_score|round(0)|int }}/100</div></div>
+    <div class="card"><div class="label">RAG</div><div class="value {{ score_class(summary.rag_score) }}">{{ summary.rag_score|round(0)|int }}/100</div></div>
+    <div class="card"><div class="label">Tool correctness</div><div class="value {{ score_class(summary.tool_score) }}">{{ summary.tool_score|round(0)|int }}/100</div></div>
+    <div class="card"><div class="label">Avg cost</div><div class="value">${{ "%.4f"|format(summary.avg_cost_usd) }}</div></div>
+    <div class="card"><div class="label">p95 latency</div><div class="value">{% if summary.p95_latency_ms %}{{ "%.1f"|format(summary.p95_latency_ms / 1000) }}s{% else %}n/a{% endif %}</div></div>
+    <div class="card"><div class="label">Pass rate</div><div class="value {{ score_class(summary.passed_scenarios / summary.total_scenarios * 100 if summary.total_scenarios else 0) }}">{{ summary.passed_scenarios }}/{{ summary.total_scenarios }}</div></div>
+  </div>
+
+  <h2>Scenario Results</h2>
+  <table>
+    <thead><tr><th>Scenario</th><th>Status</th><th>Score</th><th>Latency</th><th>Cost</th><th>Failure</th></tr></thead>
+    <tbody>
+    {% for r in results %}
+      <tr>
+        <td><code>{{ r.scenario_id }}</code></td>
+        <td class="{{ 'status-pass' if r.passed else 'status-fail' }}">{{ 'PASS' if r.passed else 'FAIL' }}</td>
+        <td>{{ (r.overall_score * 100)|round(0)|int }}</td>
+        <td>{% if r.latency_ms %}{{ r.latency_ms }}ms{% else %}-{% endif %}</td>
+        <td>{% if r.cost_usd %}${{ "%.4f"|format(r.cost_usd) }}{% else %}-{% endif %}</td>
+        <td style="color: var(--muted)">{{ (r.failure_summary or "")[:140] }}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+
+  {% if summary.security_findings %}
+  <h2>Security Findings</h2>
+  {% for f in summary.security_findings %}
+    <div class="finding">
+      <span class="badge {{ f.severity }}">{{ f.severity|upper }}</span>
+      <strong>{{ f.scenario_id }}</strong> - {{ f.finding }}
+    </div>
+  {% endfor %}
+  {% endif %}
+
+  <h2>Metric Breakdown</h2>
+  <table>
+    <thead><tr><th>Metric</th><th>Avg</th><th>Min</th><th>Max</th><th>Pass rate</th><th>Failures</th></tr></thead>
+    <tbody>
+    {% for m in summary.metric_summaries %}
+      <tr>
+        <td><code>{{ m.metric_name }}</code></td>
+        <td>{{ "%.2f"|format(m.average_score) }}</td>
+        <td>{{ "%.2f"|format(m.min_score) }}</td>
+        <td>{{ "%.2f"|format(m.max_score) }}</td>
+        <td>{{ "%.0f"|format(m.pass_rate * 100) }}%</td>
+        <td>{{ m.failure_count }}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+
+  <div class="footer">
+    Generated by <a href="https://github.com/hamza-safwan/AgentGuard" style="color: var(--primary);">AgentGuard</a>
+  </div>
+</div>
+</body>
+</html>
