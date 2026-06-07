@@ -1,0 +1,140 @@
+{
+  "$id": "https://schemas.agentguard.dev/v1/trace_step.schema.json",
+  "description": "One step in an AgentTrace.\n\nv0.2 additions (all optional, additive): ``parent_step_id`` for nesting,\n``source`` to distinguish adapter-captured vs SDK-captured vs ingested,\n``redactions`` listing field paths that were scrubbed prior to serialization,\n``cost_usd`` per-step cost, ``tokens`` for LLM-call accounting.",
+  "properties": {
+    "cost_usd": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Cost Usd"
+    },
+    "ended_at": {
+      "anyOf": [
+        {
+          "format": "date-time",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Ended At"
+    },
+    "input": {
+      "default": null,
+      "title": "Input"
+    },
+    "latency_ms": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Latency Ms"
+    },
+    "metadata": {
+      "additionalProperties": true,
+      "title": "Metadata",
+      "type": "object"
+    },
+    "name": {
+      "title": "Name",
+      "type": "string"
+    },
+    "output": {
+      "default": null,
+      "title": "Output"
+    },
+    "parent_step_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Parent Step Id"
+    },
+    "redactions": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Redactions",
+      "type": "array"
+    },
+    "source": {
+      "default": "adapter",
+      "enum": [
+        "adapter",
+        "sdk",
+        "ingest"
+      ],
+      "title": "Source",
+      "type": "string"
+    },
+    "started_at": {
+      "anyOf": [
+        {
+          "format": "date-time",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Started At"
+    },
+    "step_id": {
+      "title": "Step Id",
+      "type": "string"
+    },
+    "tokens": {
+      "anyOf": [
+        {
+          "additionalProperties": {
+            "type": "integer"
+          },
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Tokens"
+    },
+    "type": {
+      "enum": [
+        "llm_call",
+        "tool_call",
+        "retrieval",
+        "guardrail",
+        "handoff",
+        "error",
+        "final_output"
+      ],
+      "title": "Type",
+      "type": "string"
+    }
+  },
+  "required": [
+    "type",
+    "name"
+  ],
+  "title": "TraceStep",
+  "type": "object"
+}

@@ -1,0 +1,219 @@
+{
+  "$defs": {
+    "MetricSummary": {
+      "properties": {
+        "average_score": {
+          "title": "Average Score",
+          "type": "number"
+        },
+        "failure_count": {
+          "title": "Failure Count",
+          "type": "integer"
+        },
+        "max_score": {
+          "title": "Max Score",
+          "type": "number"
+        },
+        "metric_name": {
+          "title": "Metric Name",
+          "type": "string"
+        },
+        "min_score": {
+          "title": "Min Score",
+          "type": "number"
+        },
+        "pass_rate": {
+          "title": "Pass Rate",
+          "type": "number"
+        }
+      },
+      "required": [
+        "metric_name",
+        "average_score",
+        "min_score",
+        "max_score",
+        "pass_rate",
+        "failure_count"
+      ],
+      "title": "MetricSummary",
+      "type": "object"
+    },
+    "SecurityFinding": {
+      "properties": {
+        "evidence": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Evidence"
+        },
+        "finding": {
+          "title": "Finding",
+          "type": "string"
+        },
+        "scenario_id": {
+          "title": "Scenario Id",
+          "type": "string"
+        },
+        "severity": {
+          "enum": [
+            "critical",
+            "high",
+            "medium",
+            "low"
+          ],
+          "title": "Severity",
+          "type": "string"
+        }
+      },
+      "required": [
+        "severity",
+        "scenario_id",
+        "finding"
+      ],
+      "title": "SecurityFinding",
+      "type": "object"
+    }
+  },
+  "$id": "https://schemas.agentguard.dev/v1/run_summary.schema.json",
+  "properties": {
+    "agent_name": {
+      "title": "Agent Name",
+      "type": "string"
+    },
+    "agent_version": {
+      "title": "Agent Version",
+      "type": "string"
+    },
+    "avg_cost_usd": {
+      "title": "Avg Cost Usd",
+      "type": "number"
+    },
+    "avg_latency_ms": {
+      "title": "Avg Latency Ms",
+      "type": "number"
+    },
+    "deployment_recommendation": {
+      "enum": [
+        "deploy_with_monitoring",
+        "deploy_carefully",
+        "fix_before_production",
+        "do_not_deploy"
+      ],
+      "title": "Deployment Recommendation",
+      "type": "string"
+    },
+    "failed_scenario_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Failed Scenario Ids",
+      "type": "array"
+    },
+    "failed_scenarios": {
+      "title": "Failed Scenarios",
+      "type": "integer"
+    },
+    "finished_at": {
+      "anyOf": [
+        {
+          "format": "date-time",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Finished At"
+    },
+    "metric_summaries": {
+      "items": {
+        "$ref": "#/$defs/MetricSummary"
+      },
+      "title": "Metric Summaries",
+      "type": "array"
+    },
+    "overall_score": {
+      "title": "Overall Score",
+      "type": "number"
+    },
+    "p95_latency_ms": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "P95 Latency Ms"
+    },
+    "passed_scenarios": {
+      "title": "Passed Scenarios",
+      "type": "integer"
+    },
+    "rag_score": {
+      "title": "Rag Score",
+      "type": "number"
+    },
+    "run_id": {
+      "title": "Run Id",
+      "type": "string"
+    },
+    "security_findings": {
+      "items": {
+        "$ref": "#/$defs/SecurityFinding"
+      },
+      "title": "Security Findings",
+      "type": "array"
+    },
+    "security_score": {
+      "title": "Security Score",
+      "type": "number"
+    },
+    "started_at": {
+      "format": "date-time",
+      "title": "Started At",
+      "type": "string"
+    },
+    "suite": {
+      "title": "Suite",
+      "type": "string"
+    },
+    "tool_score": {
+      "title": "Tool Score",
+      "type": "number"
+    },
+    "total_scenarios": {
+      "title": "Total Scenarios",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "run_id",
+    "agent_name",
+    "agent_version",
+    "suite",
+    "started_at",
+    "total_scenarios",
+    "passed_scenarios",
+    "failed_scenarios",
+    "overall_score",
+    "security_score",
+    "rag_score",
+    "tool_score",
+    "avg_cost_usd",
+    "avg_latency_ms",
+    "deployment_recommendation"
+  ],
+  "title": "RunSummary",
+  "type": "object"
+}

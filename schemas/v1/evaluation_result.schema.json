@@ -1,0 +1,38 @@
+{
+  "$id": "https://schemas.agentguard.dev/v1/evaluation_result.schema.json",
+  "description": "Result of a single evaluator on a single scenario run.",
+  "properties": {
+    "evidence": {
+      "items": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "title": "Evidence",
+      "type": "array"
+    },
+    "metric_name": {
+      "title": "Metric Name",
+      "type": "string"
+    },
+    "passed": {
+      "title": "Passed",
+      "type": "boolean"
+    },
+    "reason": {
+      "title": "Reason",
+      "type": "string"
+    },
+    "score": {
+      "title": "Score",
+      "type": "number"
+    }
+  },
+  "required": [
+    "metric_name",
+    "score",
+    "passed",
+    "reason"
+  ],
+  "title": "EvaluationResult",
+  "type": "object"
+}

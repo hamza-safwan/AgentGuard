@@ -1,0 +1,384 @@
+{
+  "$defs": {
+    "AgentConfig": {
+      "properties": {
+        "adapter": {
+          "enum": [
+            "http",
+            "langgraph",
+            "langchain",
+            "openai_agents",
+            "crewai",
+            "pydantic_ai",
+            "mastra",
+            "vercel_ai",
+            "autogen",
+            "dspy",
+            "llamaindex",
+            "smolagents"
+          ],
+          "title": "Adapter",
+          "type": "string"
+        },
+        "extra": {
+          "additionalProperties": true,
+          "title": "Extra",
+          "type": "object"
+        },
+        "headers": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "title": "Headers",
+          "type": "object"
+        },
+        "method": {
+          "default": "POST",
+          "title": "Method",
+          "type": "string"
+        },
+        "module": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Module"
+        },
+        "object": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Object"
+        },
+        "timeout_seconds": {
+          "default": 60,
+          "title": "Timeout Seconds",
+          "type": "integer"
+        },
+        "url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Url"
+        }
+      },
+      "required": [
+        "adapter"
+      ],
+      "title": "AgentConfig",
+      "type": "object"
+    },
+    "ExpectedBehavior": {
+      "properties": {
+        "answer_must_be_grounded": {
+          "default": false,
+          "title": "Answer Must Be Grounded",
+          "type": "boolean"
+        },
+        "final_response_should": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Final Response Should",
+          "type": "array"
+        },
+        "must_call_tools": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Must Call Tools",
+          "type": "array"
+        },
+        "must_not_call_tools": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Must Not Call Tools",
+          "type": "array"
+        },
+        "must_not_reveal": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Must Not Reveal",
+          "type": "array"
+        },
+        "must_retrieve": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Must Retrieve",
+          "type": "array"
+        }
+      },
+      "title": "ExpectedBehavior",
+      "type": "object"
+    },
+    "MockSpecYAML": {
+      "description": "A single entry in a scenario's ``mocks:`` block (BLUEPRINT-7 section 4.3.1).",
+      "properties": {
+        "delay_ms": {
+          "default": 0,
+          "title": "Delay Ms",
+          "type": "integer"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "raises": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Raises"
+        },
+        "response": {
+          "default": null,
+          "title": "Response"
+        },
+        "status": {
+          "default": 200,
+          "title": "Status",
+          "type": "integer"
+        },
+        "when": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "When"
+        }
+      },
+      "required": [
+        "name"
+      ],
+      "title": "MockSpecYAML",
+      "type": "object"
+    },
+    "ScenarioInput": {
+      "properties": {
+        "files": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Files",
+          "type": "array"
+        },
+        "metadata": {
+          "additionalProperties": true,
+          "title": "Metadata",
+          "type": "object"
+        },
+        "user_message": {
+          "title": "User Message",
+          "type": "string"
+        }
+      },
+      "required": [
+        "user_message"
+      ],
+      "title": "ScenarioInput",
+      "type": "object"
+    },
+    "SecurityConfig": {
+      "properties": {
+        "pii_test": {
+          "default": false,
+          "title": "Pii Test",
+          "type": "boolean"
+        },
+        "prompt_injection": {
+          "default": false,
+          "title": "Prompt Injection",
+          "type": "boolean"
+        },
+        "system_prompt_leakage": {
+          "default": false,
+          "title": "System Prompt Leakage",
+          "type": "boolean"
+        }
+      },
+      "title": "SecurityConfig",
+      "type": "object"
+    },
+    "ThresholdConfig": {
+      "properties": {
+        "max_cost_usd": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Max Cost Usd"
+        },
+        "max_latency_ms": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Max Latency Ms"
+        },
+        "min_overall_score": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Min Overall Score"
+        },
+        "min_security_score": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Min Security Score"
+        }
+      },
+      "title": "ThresholdConfig",
+      "type": "object"
+    }
+  },
+  "$id": "https://schemas.agentguard.dev/v1/scenario.schema.json",
+  "properties": {
+    "agent": {
+      "$ref": "#/$defs/AgentConfig"
+    },
+    "description": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Description"
+    },
+    "expected": {
+      "$ref": "#/$defs/ExpectedBehavior"
+    },
+    "id": {
+      "title": "Id",
+      "type": "string"
+    },
+    "input": {
+      "$ref": "#/$defs/ScenarioInput"
+    },
+    "metrics": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Metrics",
+      "type": "array"
+    },
+    "mocks": {
+      "items": {
+        "$ref": "#/$defs/MockSpecYAML"
+      },
+      "title": "Mocks",
+      "type": "array"
+    },
+    "mocks_module": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Mocks Module"
+    },
+    "security": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/SecurityConfig"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "suite": {
+      "title": "Suite",
+      "type": "string"
+    },
+    "tags": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Tags",
+      "type": "array"
+    },
+    "thresholds": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ThresholdConfig"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    }
+  },
+  "required": [
+    "id",
+    "suite",
+    "agent",
+    "input",
+    "metrics"
+  ],
+  "title": "Scenario",
+  "type": "object"
+}
