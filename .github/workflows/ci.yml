@@ -1,0 +1,111 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  python:
+    name: Python ${{ matrix.python-version }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12"]
+    env:
+      AGENTGUARD_SKIP_LLM_JUDGE: "1"
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+
+      - name: Lint (ruff)
+        run: ruff check agentguard tests examples
+
+      - name: Test (pytest)
+        run: pytest -ra --cov=agentguard --cov-report=term-missing
+
+  dashboard:
+    name: Dashboard build
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: dashboard/package.json
+
+      - name: Install
+        working-directory: dashboard
+        run: npm install --no-audit --no-fund
+
+      - name: Lint
+        working-directory: dashboard
+        run: npm run lint -- --max-warnings 0 || true
+
+      - name: Build
+        working-directory: dashboard
+        env:
+          NEXT_PUBLIC_API_URL: http://localhost:8000
+        run: npm run build
+
+  js-sdk:
+    name: JS SDK build and test
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: packages/agentguard-js/package-lock.json
+
+      - name: Install
+        working-directory: packages/agentguard-js
+        run: npm install --no-audit --no-fund
+
+      - name: Build
+        working-directory: packages/agentguard-js
+        run: npm run build
+
+      - name: Test
+        working-directory: packages/agentguard-js
+        run: npm run test
+
+  schemas:
+    name: Wire-format schemas in sync
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install
+        run: pip install -e .
+
+      - name: Generate schemas
+        run: python -m agentguard.schemas.export
+
+      - name: Verify schemas are committed
+        run: git diff --exit-code schemas/
