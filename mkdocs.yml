@@ -1,0 +1,59 @@
+site_name: AgentGuard
+site_description: CI/CD reliability and security testing for LLM agents.
+site_url: https://hamza-safwan.github.io/AgentGuard/
+repo_url: https://github.com/hamza-safwan/AgentGuard
+repo_name: hamza-safwan/AgentGuard
+
+theme:
+  name: readthedocs
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - def_list
+  - md_in_html
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - toc:
+      permalink: true
+
+validation:
+  nav:
+    omitted_files: ignore
+  links:
+    not_found: ignore
+    anchors: ignore
+
+nav:
+  - Home: index.md
+  - Getting Started:
+      - Installation: installation.md
+      - Quickstart: getting-started.md
+      - Core Concepts: concepts.md
+  - User Guide:
+      - Scenario DSL: scenario-dsl-guide.md
+      - CLI Reference: cli-reference.md
+      - Adapters: adapters.md
+      - Evaluators: evaluators.md
+      - Mock Tools: mock-tools.md
+      - Reports: reports.md
+      - Dashboard: dashboard.md
+  - SDKs:
+      - Python SDK: python-sdk.md
+      - Pytest Plugin: pytest-plugin.md
+      - JavaScript SDK: js-sdk.md
+  - Operations:
+      - CI/CD: ci-cd.md
+      - Observability: observability.md
+      - Deployment: deployment.md
+      - Security: security.md
+  - Extending:
+      - Custom Plugins: custom-plugins.md
+      - Adapter Development: adapter-development.md
+      - Evaluator Development: evaluator-development.md
+  - Project:
+      - Public Release Plan: publication-roadmap.md
+      - Engineering Roadmap: ENGINEERING-ROADMAP.md
+      - Architecture: architecture.md
