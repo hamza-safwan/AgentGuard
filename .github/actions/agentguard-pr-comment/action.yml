@@ -1,0 +1,52 @@
+name: AgentGuard PR Comment
+description: Post a structured AgentGuard reliability summary to the pull request.
+author: AgentGuard CI Contributors
+branding:
+  icon: message-square
+  color: purple
+
+inputs:
+  run-json:
+    description: Path to the saved run JSON (.agentguard/runs/<id>.json) or 'latest'.
+    required: false
+    default: latest
+  tag:
+    description: HTML-comment marker used to find and update the existing comment idempotently.
+    required: false
+    default: agentguard-ci-report
+  trace-viewer-base-url:
+    description: Public dashboard base URL (e.g. https://dash.example.com); enables direct trace links.
+    required: false
+    default: ""
+  artifact-url:
+    description: URL to the workflow artifact containing the HTML report.
+    required: false
+    default: ""
+  python-version:
+    description: Python version to install for the bot script.
+    required: false
+    default: "3.11"
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-python@v5
+      with:
+        python-version: ${{ inputs.python-version }}
+
+    - name: Install bot deps
+      shell: bash
+      run: pip install --quiet requests
+
+    - name: Post PR comment
+      shell: bash
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+        GITHUB_REPOSITORY: ${{ github.repository }}
+        GITHUB_EVENT_PATH: ${{ github.event_path }}
+        INPUT_RUN_JSON: ${{ inputs.run-json }}
+        INPUT_TAG: ${{ inputs.tag }}
+        INPUT_TRACE_VIEWER_BASE_URL: ${{ inputs.trace-viewer-base-url }}
+        INPUT_ARTIFACT_URL: ${{ inputs.artifact-url }}
+      run: |
+        python "${{ github.action_path }}/src/post_comment.py"

@@ -1,0 +1,94 @@
+name: AgentGuard CI
+description: Run AgentGuard scenarios as a CI gate against your LLM agent.
+author: AgentGuard CI Contributors
+branding:
+  icon: shield
+  color: purple
+
+inputs:
+  scenarios:
+    description: Path to a scenario file or directory.
+    required: true
+    default: scenarios
+  agent-version:
+    description: Tag for this agent version (use git SHA or release tag).
+    required: false
+    default: ${{ github.sha }}
+  fail-under:
+    description: Minimum overall score (0-100). The action fails if the run scores lower.
+    required: false
+    default: "85"
+  security-threshold:
+    description: Minimum security score (0-100). The action fails if the run scores lower.
+    required: false
+    default: "90"
+  parallel:
+    description: Number of scenarios to run concurrently.
+    required: false
+    default: "1"
+  python-version:
+    description: Python version to install.
+    required: false
+    default: "3.11"
+  agentguard-version:
+    description: AgentGuard release to install (defaults to the latest from PyPI).
+    required: false
+    default: ""
+  extras:
+    description: Optional pip extras (e.g. "langgraph,langchain,llm").
+    required: false
+    default: ""
+  upload-report:
+    description: When true, generate an HTML report and upload it as a workflow artifact.
+    required: false
+    default: "true"
+
+runs:
+  using: composite
+  steps:
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ inputs.python-version }}
+
+    - name: Install AgentGuard
+      shell: bash
+      run: |
+        set -euo pipefail
+        spec="agentguard-ci"
+        if [ -n "${{ inputs.agentguard-version }}" ]; then
+          spec="agentguard-ci==${{ inputs.agentguard-version }}"
+        fi
+        if [ -n "${{ inputs.extras }}" ]; then
+          spec="${spec}[${{ inputs.extras }}]"
+        fi
+        pip install --upgrade pip
+        pip install "${spec}"
+
+    - name: Run AgentGuard
+      shell: bash
+      env:
+        AGENTGUARD_SKIP_LLM_JUDGE: ${{ env.AGENTGUARD_SKIP_LLM_JUDGE || '0' }}
+      run: |
+        agentguard run "${{ inputs.scenarios }}" \
+          --agent-version "${{ inputs.agent-version }}" \
+          --fail-under "${{ inputs.fail-under }}" \
+          --security-threshold "${{ inputs.security-threshold }}" \
+          --parallel "${{ inputs.parallel }}" \
+          --save
+
+    - name: Generate HTML report
+      if: always() && inputs.upload-report == 'true'
+      shell: bash
+      run: |
+        agentguard report latest --format html || true
+
+    - name: Upload reliability report
+      if: always() && inputs.upload-report == 'true'
+      uses: actions/upload-artifact@v4
+      with:
+        name: agentguard-report
+        path: |
+          reports/
+          .agentguard/runs/
+        if-no-files-found: warn
